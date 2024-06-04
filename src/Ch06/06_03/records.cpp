@@ -1,5 +1,6 @@
 #include "records.h"
 #include <iostream>
+#include <fstream>
 
 Student::Student(int the_id, std::string the_name){
     id = the_id;
@@ -105,15 +106,33 @@ std::string StudentRecords::get_course_name(int cid) const{
     return courses[j].get_name();
 }
 
-void StudentRecords::report_card(int sid){
+void StudentRecords::report_card(int sid, std::ostream& stream){
     float points = 0.0f, credits = 0.0f;
-    std::cout << std::endl << "Report Card for " << get_student_name(sid) << std::endl;
+    stream << std::endl << "Report Card for " << get_student_name(sid) << std::endl;
     for (Grade& grd : grades)
         if (grd.get_student_id() == sid){
-            std::cout << get_course_name(grd.get_course_id()) << ": " << grd.get_grade() << std::endl;
+            stream << get_course_name(grd.get_course_id()) << ": " << grd.get_grade() << std::endl;
             unsigned char current_credits = get_course_credits(grd.get_course_id());
             credits += current_credits;
             points += get_num_grade(grd.get_grade()) * current_credits;
         }
-    std::cout << "GPA: " << (points / credits) << std::endl;
+    stream << "GPA: " << (points / credits) << std::endl;
+}
+
+void StudentRecords::report_file(std::ofstream &outFile){
+    int sid;
+    outFile.open("reports.txt");
+    if(outFile.fail())
+        std::cout << std::endl << "Couldn't open the Reports file!" << std::endl;
+    else{
+        outFile << "===================================" << std::endl << std::endl;
+        for (auto& st : students){
+            sid = st.get_id();
+            report_card(sid, outFile);
+            outFile << "===================================" << std::endl << std::endl;
+        }
+        outFile.close();
+        std::cout << "Reports created successfully!" << std::endl;
+
+    }
 }

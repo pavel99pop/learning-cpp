@@ -57,5 +57,6 @@ public:
     unsigned char get_course_credits(int) const;
     float get_GPA(int) const;
     std::string get_course_name(int) const;
-    void report_card(int);
+    void report_card(int, std::ostream&);
+    void report_file(std::ofstream&);
 };
